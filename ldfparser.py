@@ -80,7 +80,6 @@ class LDF:
             return [df_IV, df_eedf, df_result]
 
         return 0
-    
     def ldf_paths(self):
         ldf_files = []
         for root, directories, files in os.walk(self.dir):

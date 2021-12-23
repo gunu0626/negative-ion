@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# %%
 import xml.etree.ElementTree as ET
 import numpy as np
 import pandas as pd
@@ -86,4 +86,5 @@ class LDF:
             for name in files:
                 if self.__is_ldf(os.path.join(root, name)):
                     ldf_files.append(os.path.join(root, name))
+        ldf_files.sort(key=lambda x:float(x.split('/')[-1][:-4]))
         return ldf_files

@@ -27,7 +27,6 @@ class LDF:
         writer.save()
 
     ### Pullic method ####    
-    
     def pull_attr(self, file, need_return = False, file_save = False):
         """pull_attr(file, need_return=False, file_save=False)"""
     
@@ -68,7 +67,7 @@ class LDF:
         Vp_error = float(results.find('Vp_error').text)
         Isat = float(results.find('isat').text)
         Vsat = float(results.find('Vsat').text)
-        
+
 
         df_IV = pd.DataFrame({'V': V, 'I': I, 'std_V': std_V, 'std_I': std_I})
         df_eedf = pd.DataFrame({'eepf_energy': eepf_energy, 'eepf': eepf, 'eepf_error': eepf_error})

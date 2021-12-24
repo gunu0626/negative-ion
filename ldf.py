@@ -5,8 +5,10 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import pandas as pd
 import os
+from scipy.integrate import simpson
+from const import *
 
-class LDF:
+class parser:
     
     def __init__(self, dir_):
         self.dir = dir_
@@ -80,6 +82,7 @@ class LDF:
             return [df_IV, df_eedf, df_result]
 
         return 0
+        
     def ldf_paths(self):
         ldf_files = []
         for root, directories, files in os.walk(self.dir):
@@ -88,3 +91,45 @@ class LDF:
                     ldf_files.append(os.path.join(root, name))
         ldf_files.sort(key=lambda x:float(x.split('/')[-1][:-4]))
         return ldf_files
+
+class processor():
+    def __init__(self, IV):
+        self.IV = IV
+        self.V = np.array(IV['V'])
+        self.I = np.array(IV['I'])
+        
+    def cal_sat(self):
+        return -self.V[0], -self.I[0]
+
+    def cal_Vp(self):
+        dIdV = np.gradient(self.I, self.V)
+        self.dIdV = dIdV
+        Vp = self.V[np.argmax(dIdV)]
+        return Vp
+
+    def cal_eepf(self):
+        Vp = self.cal_Vp()
+    
+        I_adj = self.I[self.V<=Vp]
+        V_adj = self.V[self.V<=Vp] - Vp
+        dI = np.gradient(I_adj, V_adj)
+        ddI = np.gradient(dI, V_adj)
+        
+        self.eedf = 2*ddI/e/Ap*np.sqrt(2*Me*(Vp-V_adj)/e)
+        self.eepf = self.eedf/np.sqrt(Vp-V_adj)
+        self.V_adj = np.flip(-V_adj)
+        self.eepf = np.flip(self.eepf)
+        self.eedf = np.flip(self.eedf)
+        return self.V_adj, self.eepf, self.eedf
+
+    def cal_ne(self, V_lim):
+        mask = self.V_adj < V_lim
+        reduced_eepf = self.eepf[mask]
+        reduced_V = self.V_adj[mask]
+        return simpson(reduced_eepf, reduced_V)
+
+    def cal_Te(self, ne, V_lim):
+        mask = self.V_adj < V_lim
+        reduced_eedf = self.eedf[mask]
+        reduced_V = self.V_adj[mask]
+        return 2/3*simpson(reduced_eedf/ne*reduced_V, reduced_V)

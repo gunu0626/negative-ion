@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-# %%
+
 import xml.etree.ElementTree as ET
-import numpy as np
 import pandas as pd
 import os
 from scipy.integrate import simpson
@@ -31,7 +30,7 @@ class parser:
     ### Pullic method ####    
     def pull_attr(self, file, need_return = False, file_save = False):
         """pull_attr(file, need_return=False, file_save=False)"""
-    
+
         ldf_list = self.ldf_paths()
         tree = ET.parse(file)
         root = tree.getroot()
@@ -106,7 +105,12 @@ class processor():
         self.dIdV = dIdV
         Vp = self.V[np.argmax(dIdV)]
         return Vp
-
+        
+    def cal_second_derivative(self):
+        dIdV = np.gradient(self.I, self.V)
+        ddI = np.gradient(dIdV, self.V)
+        return self.V, ddI
+        
     def cal_eepf(self):
         Vp = self.cal_Vp()
     

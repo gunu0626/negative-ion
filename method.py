@@ -1,7 +1,10 @@
 from const import *
 import numpy as np
+from scipy.interpolate import interp1d
 from scipy.optimize import fsolve
 from scipy.special import erfc
+from scipy.integrate import simpson
+from scipy.integrate import odeint
 
 class iterative():
     ### Private method ####     
@@ -29,13 +32,30 @@ class iterative():
         uB = np.sqrt(e*self.Te/Mp)*np.sqrt((1+a_s)/(1+self.gamma*a_s))
         return uB
     
-    def __cal_r_sh_new(self, Vsat, J):
-        pass
+    def __cylindrical_sheath(self, s, J, uB):
+        R = rp + s
+        r_list = np.linspace(R, rp, 300)
+        def fun(y, r):
+            return [R*J/(r*epsilon_0*y[1]) - y[0]/r, e*y[0]/(Mp*y[1])]
 
-    def __cal_r_sh(self, J): 
-            r_sh = np.sqrt(4/9*epsilon_0*np.sqrt(2*e/Mp)*(self.V_sat - self.V_p)**1.5/J)
-            #r_sh = rp
-            return r_sh
+        sol = odeint(fun, y0=[0, uB], t=r_list)
+        V = simpson(sol[:, 0], r_list)
+        return sol[:, 0], sol[:, 1], V, r_list
+
+    def __cal_V_s_list(self, J, uB):
+        s_list = np.linspace(0.01*rp, 10*rp, 200)
+        V_list = []
+
+        for s in s_list:
+            V_list.append(self.__cylindrical_sheath(s, J, uB)[2])
+
+        self.s_list = s_list
+        self.V_list = np.array(V_list)
+
+    def __cal_r_sh(self, V, J, uB):
+        self.__cal_V_s_list(J, uB)
+        func = interp1d(self.V_list, self.s_list)
+        return func(V) + rp
 
     ### Public method ####    
     def iteration(self):
@@ -54,7 +74,7 @@ class iterative():
             comp = a_0 # for loop condition
             a_0 = n_p/self.ne-1 # a_0_k
             J = hr*e*n_p*uB # J_k
-            r_sh = self.__cal_r_sh(J)
+            r_sh = self.__cal_r_sh(self.V_sat, J, uB)
             S_eff = 2*np.pi*r_sh*lp
             
             #print(count, a_0)
@@ -66,6 +86,7 @@ class iterative():
                 print('-----------No Convergence!---------------------')
                 break
         print('--------------------------------------------------')
+
 
 class fitting(iterative):
     ### Private_method ### 

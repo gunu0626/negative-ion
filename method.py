@@ -103,6 +103,10 @@ class fitting(iterative):
         a_0 = nm/ne
         a_s = self.__cal_alpha(a_0)
         uBp = self.__cal_uB(a_s)
+
+        r_sh = self.__cal_r_sh(self.V_sat, hr*e*uBp*n_p, uBp)
+        Seff = np.pi*r_sh**2 + 2*np.pi*r_sh*lp
+
         if Vp > V:
             I = -hr*n_p*e*uBp*Seff(V, ne, nm, Te, Tm, Vp)
         else:
@@ -120,6 +124,9 @@ class fitting(iterative):
         
     def negative_ion_current(self, V, ne, nm, Te, Tm, Vp):
         uBn = np.sqrt(e*Tm/Mn)
+        r_sh = self.__cal_r_sh(self.V_sat, hr*e*uBn*nm, uBn)
+        Seff = np.pi*r_sh**2 + 2*np.pi*r_sh*lp
+
         if Vp > V:
             I_Vp = hr*nm*e*uBn*Seff(V, ne, nm, Te, Tm, Vp) # Seff(V) function 만들기
             I = I_Vp*np.exp(-(Vp - V)/Tm)

@@ -76,7 +76,8 @@ class iterative():
             J = hr*e*n_p*uB # J_k
             r_sh = self.__cal_r_sh(self.V_sat, J, uB)
             S_eff = 2*np.pi*r_sh*lp
-            
+            print('J: {:.2e}\t uB: {:.3f}\t r_sh: {:.2e}\t'.format(J, uB, r_sh))
+            print('-------------------------------------------------------')
             #print(count, a_0)
             
             if abs(comp - a_0) < 0.001*a_0:

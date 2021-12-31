@@ -16,3 +16,5 @@ hr = 0.6 # h-factor
 rp = 0.1e-3 # probe radius [m]
 lp = 5.5e-3 # probe length [m]
 Ap = 2*np.pi*lp*rp + 2*np.pi*rp**2 # probe surface area[m2]
+
+# %%

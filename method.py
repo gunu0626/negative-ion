@@ -97,14 +97,54 @@ class fitting(iterative):
         if (np.array(IV['V']) == V).all():
             print("File import success")
 
+    def __cal_alpha(self,a_0, gamma):
+        def alpha_s_eqn(a_s):
+            return a_0 - a_s*np.exp(-1/2*(1+a_s)/(1+gamma*a_s)*(1-gamma))
+        ans_arr = np.round(fsolve(alpha_s_eqn,np.logspace(-2,2,5)),4)
+        ans_arr = np.unique(ans_arr)
+        a_s = min(ans_arr)
+        #print("a_0: {:.4f}\t a_s: {}\t gamma: {:.4f}\t sol_number: {}".format(a_0, a_s, gamma, len(ans_arr)))
+        return a_s
+    
+    def __cal_uB(self,a_s, gamma, Te):
+        uB = np.sqrt(e*Te/Mp)*np.sqrt((1+a_s)/(1+gamma*a_s))
+        return uB
+    
+    def __cylindrical_sheath(self, s, J, uB):
+        R = rp + s
+        r_list = np.linspace(R, rp, 300)
+        def fun(y, r):
+            return [R*J/(r*epsilon_0*y[1]) - y[0]/r, e*y[0]/(Mp*y[1])]
+
+        sol = odeint(fun, y0=[0, uB], t=r_list)
+        V = simpson(sol[:, 0], r_list)
+        return sol[:, 0], sol[:, 1], V, r_list
+
+    def __cal_V_s_list(self, J, uB):
+        s_list = np.linspace(0.01*rp, 10*rp, 200)
+        V_list = []
+
+        for s in s_list:
+            V_list.append(self.__cylindrical_sheath(s, J, uB)[2])
+
+        self.s_list = s_list
+        self.V_list = np.array(V_list)
+
+    def __cal_r_sh(self, V, J, uB):
+        self.__cal_V_s_list(J, uB)
+        func = interp1d(self.V_list, self.s_list)
+        return func(V) + rp
+
+
     ### Public_method ### 
     def positive_ion_current(self, V, ne, nm, Te, Tp, Tm, Vp):
         n_p = ne + nm
         a_0 = nm/ne
-        a_s = self.__cal_alpha(a_0)
-        uBp = self.__cal_uB(a_s)
+        gamma = Te/Tm
+        a_s = self.__cal_alpha(a_0, gamma)
+        uBp = self.__cal_uB(a_s, gamma, Te)
 
-        r_sh = self.__cal_r_sh(self.V_sat, hr*e*uBp*n_p, uBp)
+        r_sh = self.__cal_r_sh(V, hr*e*uBp*n_p, uBp)
         Seff = np.pi*r_sh**2 + 2*np.pi*r_sh*lp
 
         if Vp > V:
@@ -124,7 +164,8 @@ class fitting(iterative):
         
     def negative_ion_current(self, V, ne, nm, Te, Tm, Vp):
         uBn = np.sqrt(e*Tm/Mn)
-        r_sh = self.__cal_r_sh(self.V_sat, hr*e*uBn*nm, uBn)
+        self.gamma = Te/Tm
+        r_sh = self.__cal_r_sh(V, hr*e*uBn*nm, uBn)
         Seff = np.pi*r_sh**2 + 2*np.pi*r_sh*lp
 
         if Vp > V:

@@ -20,3 +20,4 @@ lp = 5.5e-3 # probe length [m]
 Ap = 2*np.pi*lp*rp + 2*np.pi*rp**2 # probe surface area[m2]
 
 # %%
+test = np.random.randn(10, 18)

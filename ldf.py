@@ -8,6 +8,13 @@ import os
 from scipy.integrate import simpson
 from const import *
 
+from plotting import *
+
+
+def conv_to_ndarr(inputs):
+    return map(lambda x:np.array(x), inputs)
+
+
 class parser:
     
     def __init__(self, dir_):

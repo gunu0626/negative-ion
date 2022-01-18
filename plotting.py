@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def conv_to_ndarr(inputs):
     return map(lambda x:np.array(x), inputs)
 
 # plot Te, Vp, alpha, ne
-def plot_default(x, Te, Vp, alpha, ne):
+def plot_default(x, Te, Vp, alpha, ne, x_type):
     x, Te, Vp, alpha, ne = conv_to_ndarr((x, Te, Vp, alpha, ne))
 
     plt.subplots(figsize = (6,12))
@@ -28,7 +29,10 @@ def plot_default(x, Te, Vp, alpha, ne):
     ax4 = plt.subplot(4,1,4, sharex = ax1)
     plt.plot(x, alpha, 'o-g')
     plt.ylabel('Eletronegativity', fontdict={'size':12})
-    plt.xlabel('Distance [mm] or B-field [G]', fontdict={'size':12})
+    if x_type == 'Distance':
+        plt.xlabel('Distance [mm]', fontdict={'size':12})
+    elif x_type == 'B-field':
+        plt.xlabel('B-field [G]', fontdict={'size':12})
     plt.grid(True)
 
 
@@ -37,7 +41,7 @@ def plot_default(x, Te, Vp, alpha, ne):
     plt.show()
 
 # plot nm, np & ne & ne, nm, np
-def plot_density(x, ne, nm):
+def plot_density(x, ne, nm, x_type):
     x, ne, nm = conv_to_ndarr((x, ne, nm))
 
     plt.subplots(figsize = (6,12))
@@ -57,7 +61,10 @@ def plot_density(x, ne, nm):
     ax3 = plt.subplot(3,1,3, sharex = ax1)
     plt.plot(x, ne, 'o-c', x, nm, 'o-m', x, nm + ne, 'o-k')
     plt.ylabel('Density [m-3]', fontdict={'size':12})
-    plt.xlabel('Distance [mm] or B-field [G]', fontdict={'size':12})
+    if x_type == 'Distance':
+        plt.xlabel('Distance [mm]', fontdict={'size':12})
+    elif x_type == 'B-field':
+        plt.xlabel('B-field [G]', fontdict={'size':12})
     plt.legend(['Electron', 'Negative ion', 'Positive ion'])
     plt.grid(True)
 

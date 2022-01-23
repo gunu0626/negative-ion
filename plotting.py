@@ -6,7 +6,7 @@ def conv_to_ndarr(inputs):
     return map(lambda x:np.array(x), inputs)
 
 # plot Te, Vp, alpha, ne
-def plot_default(x, Te, Vp, alpha, ne, x_type):
+def plot_default(x, Te, Vp, alpha, ne, x_type, save=False):
     x, Te, Vp, alpha, ne = conv_to_ndarr((x, Te, Vp, alpha, ne))
 
     plt.subplots(figsize = (6,12))
@@ -34,14 +34,14 @@ def plot_default(x, Te, Vp, alpha, ne, x_type):
     elif x_type == 'B-field':
         plt.xlabel('B-field [G]', fontdict={'size':12})
     plt.grid(True)
-
-
     
     plt.subplots_adjust(left=0.125, bottom=0.1,  right=0.9, top=0.9, wspace=0.2, hspace=0.2)
+    if save:
+        plt.savefig('default.png')
     plt.show()
 
 # plot nm, np & ne & ne, nm, np
-def plot_density(x, ne, nm, x_type):
+def plot_density(x, ne, nm, x_type, save=False):
     x, ne, nm = conv_to_ndarr((x, ne, nm))
 
     plt.subplots(figsize = (6,12))
@@ -69,10 +69,13 @@ def plot_density(x, ne, nm, x_type):
     plt.grid(True)
 
     plt.subplots_adjust(left=0.125, bottom=0.1,  right=0.9, top=0.9, wspace=0.2, hspace=0.2)
+    
+    if save:
+        plt.savefig('density.png')
     plt.show()
 
 # plot EEPF, dIdV for checking
-def plot_check(energy, eepf, V, dIdV, Vp):
+def plot_check(energy, eepf, V, dIdV, Vp, save=False):
     plt.subplots(figsize = (15,5))
     
     ax1 = plt.subplot(1,2,1)
@@ -95,5 +98,7 @@ def plot_check(energy, eepf, V, dIdV, Vp):
     plt.legend(['Vp = {:.4f}'.format(Vp)])
     plt.grid(True)
 
+    
+    if save:
+        plt.savefig('eepf_dIdV.png')
     plt.show()
-

@@ -4,8 +4,7 @@ import numpy as np
 H_FACTOR = 0.6 # h-factor
 PROBE_RADIUS = 25e-6 # probe radius [m]
 PROBE_LENGTH = 6e-3 # probe length [m]
-PROBE_AREA = 2*np.pi*lp*rp + 2*np.pi*rp**2 # probe surface area [m2]
-
+PROBE_AREA = 2*np.pi*PROBE_RADIUS*PROBE_LENGTH + 2*np.pi*PROBE_RADIUS**2 # probe surface area [m2]
 
 ### PHYSICAL CONSTANTS ###
 ELECTRON_CHARGE = 1.6e-19 # electron charge [C]

@@ -4,7 +4,7 @@
 import xml.etree.ElementTree as ET
 import pandas as pd
 import os
-from scipy.integrate import simpson
+from scipy.integrate import simps
 from const import *
 
 from plotting import *
@@ -137,10 +137,10 @@ class processor():
         mask = self.V_adj < V_lim
         reduced_eepf = self.eepf[mask]
         reduced_V = self.V_adj[mask]
-        return simpson(reduced_eepf, reduced_V)
+        return simps(reduced_eepf, reduced_V)
 
     def cal_Te(self, ne, V_lim):
         mask = self.V_adj < V_lim
         reduced_eedf = self.eedf[mask]
         reduced_V = self.V_adj[mask]
-        return 2/3*simpson(reduced_eedf/ne*reduced_V, reduced_V)
+        return 2/3*simps(reduced_eedf/ne*reduced_V, reduced_V)

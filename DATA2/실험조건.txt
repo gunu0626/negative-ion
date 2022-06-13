@@ -1,0 +1,11 @@
+O2  535 sccm 3 mTorr
+
+Filament 30 - 31A
+Arc voltage 70 Vcurrent 0.56 A
+
+
+
+Probe location: Center: #3에 맞게, Edge: #3
+
+
+36A 필라멘트 넣으면 아크전류 상승... 필라멘트 손상예상

@@ -35,13 +35,24 @@ class parser:
         writer.save()
 
     ### Pullic method ####    
-    def pull_attr(self, file, need_return = False, file_save = False):
+    def pull_attr(self, file, need_return = False, file_save = False, time_specify = False):
         """pull_attr(file, need_return=False, file_save=False)"""
 
         ldf_list = self.ldf_paths()
         tree = ET.parse(file)
         root = tree.getroot()
-        scanData = root.find('scanData')
+
+        if time_specify:
+            scanData = root.findall('scanData')
+            for data in scanData:
+                status = data.find('Status')
+                time = float(status.find('resolved_time').text)
+                if time > 600e-6:
+                    scanData = data
+                    break
+        else:
+            scanData = root.find('scanData')
+            
         eepf_data = scanData.find('eedf_data')
         IV_data = scanData.find('data')
         results = scanData.find('results')
